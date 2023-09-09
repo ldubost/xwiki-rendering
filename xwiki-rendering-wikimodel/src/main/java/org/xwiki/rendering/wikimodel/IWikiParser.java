@@ -35,4 +35,12 @@ public interface IWikiParser
      * @throws WikiParserException
      */
     void parse(Reader reader, IWemListener listener) throws WikiParserException;
+
+    /**
+     * @param string
+     * @param listener
+     * @throws WikiParserException
+     */
+    void parse(String content, IWemListener listener) throws WikiParserException;
+
 }

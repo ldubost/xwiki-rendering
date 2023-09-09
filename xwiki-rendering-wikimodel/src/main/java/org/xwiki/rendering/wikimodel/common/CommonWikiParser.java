@@ -27,6 +27,7 @@ import org.xwiki.rendering.wikimodel.WikiParserException;
 import org.xwiki.rendering.wikimodel.impl.WikiScannerContext;
 import org.xwiki.rendering.wikimodel.internal.common.javacc.CommonWikiScanner;
 import org.xwiki.rendering.wikimodel.internal.common.javacc.ParseException;
+import org.xwiki.rendering.wikimodel.internal.common.javacc.StreamProvider;
 
 /**
  * @version $Id$
@@ -50,11 +51,28 @@ public class CommonWikiParser implements IWikiParser
         throws WikiParserException
     {
         try {
-            CommonWikiScanner scanner = new CommonWikiScanner(reader);
+            CommonWikiScanner scanner = new CommonWikiScanner(new StreamProvider(reader));
             WikiScannerContext context = new WikiScannerContext(listener);
             scanner.parse(context);
         } catch (ParseException e) {
             throw new WikiParserException(e);
         }
     }
+
+    /**
+     * @see org.xwiki.rendering.wikimodel.IWikiParser#parse(java.io.Reader,
+     *      org.xwiki.rendering.wikimodel.IWemListener)
+     */
+    public void parse(String content, IWemListener listener)
+        throws WikiParserException
+    {
+        try {
+            CommonWikiScanner scanner = new CommonWikiScanner(content);
+            WikiScannerContext context = new WikiScannerContext(listener);
+            scanner.parse(context);
+        } catch (ParseException e) {
+            throw new WikiParserException(e);
+        }
+    }
+
 }

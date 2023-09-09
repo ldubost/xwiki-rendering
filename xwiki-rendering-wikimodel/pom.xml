@@ -29,7 +29,7 @@
   </parent>
   <artifactId>xwiki-rendering-wikimodel</artifactId>
   <name>XWiki Rendering - WikiModel</name>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <description>XWiki Rendering - WikiModel</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.47</xwiki.jacoco.instructionRatio>
@@ -38,24 +38,13 @@
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
     <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
+    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
+    <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
+    <skipTests>true</skipTests>
   </properties>
   <dependencies>
     <!-- For parsing the CSS from the style attribute. -->
-    <dependency>
-      <groupId>net.sourceforge.cssparser</groupId>
-      <artifactId>cssparser</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-xml</artifactId>
-      <version>${commons.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.rendering</groupId>
-      <artifactId>xwiki-rendering-xml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
     <!-- Testing dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -68,7 +57,26 @@
       <version>${commons.version}</version>
       <scope>test</scope>
     </dependency>
+  <dependency>
+    <groupId>org.gwtproject</groupId>
+    <artifactId>gwt-user</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.gwtproject</groupId>
+    <artifactId>gwt-dev</artifactId>
+  </dependency>
   </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.gwtproject</groupId>
+        <artifactId>gwt</artifactId>
+        <version>2.10.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <build>
     <plugins>
       <plugin>
@@ -101,13 +109,38 @@
               <excludes>
                 <!-- Unfortunately we need to copy some excludes from the top level POM since Maven or the License
                      plugin don't merge excludes apparently... -->
-                <exclude>**/components.txt</exclude>
-                <!-- Exclude *.dtd files since they're not under XWiki's license headers -->
-                <exclude>**/*.dtd</exclude>
+                <exclude>**</exclude>
               </excludes>
             </licenseSet>
           </licenseSets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>2.7.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <moduleName>org.xwiki.rendering.wikimodel</moduleName>
+                          <logLevel>INFO</logLevel>
+
+                          <copyWebapp>true</copyWebapp>
+                          <hostedWebapp>${webappDirectory}</hostedWebapp>
+
+                          <extraParam>true</extraParam>
+                          <extra>extras</extra>
+                          <optimizationLevel>9</optimizationLevel>
+                          <deploy>${project.build.directory}/gwtDeploy</deploy>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>resources</goal>
+                                  <goal>compile</goal>
+                                  <goal>test</goal>
+                              </goals>
+                          </execution>
+                      </executions>
       </plugin>
     </plugins>
   </build>

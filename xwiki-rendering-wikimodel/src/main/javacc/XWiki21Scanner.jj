@@ -26,6 +26,7 @@ options
     //DEBUG_PARSER = true;
     //DEBUG_LOOKAHEAD = true;
     //DEBUG_TOKEN_MANAGER = true;
+    JAVA_TEMPLATE_TYPE = "modern";  
 }
 
 PARSER_BEGIN(XWikiScanner)
@@ -62,8 +63,8 @@ import org.xwiki.rendering.wikimodel.xwiki.xwiki20.XWikiWikiParameters;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.regexp.shared.MatchResult;
 
 /**
  * This is the internal wiki page parser generated from the grammar file.
@@ -128,11 +129,13 @@ public class XWikiScanner {
     }
 
     private void processMacro(String start, String content, boolean inline) {
-        Matcher nameMatcher = token_source.MACRO_NAME_PATTERN.matcher(start);
-        if (!nameMatcher.find()) {
-             throw new RuntimeException(String.format("Macro name pattern did not match [%s].", start));
+        MatchResult nameMatcher = token_source.MACRO_NAME_PATTERN.exec(start.toString());
+        if (nameMatcher.getGroupCount()==1) {
+             throw new RuntimeException("Macro name pattern did not match [%s]." + start);
         }
-	String name = nameMatcher.group(1);
+	    String name = nameMatcher.getGroup(1);
+
+        /*
         int beginIndex = nameMatcher.end();
         int endIndex = start.length() - "}}".length();
         if (start.charAt(endIndex - 1) == '/') {
@@ -158,7 +161,10 @@ public class XWikiScanner {
             } else {
                 fContext.onMacro(name, params, content);
             }
-        }
+        }*/
+
+        WikiParameters params = new XWikiWikiParameters("");
+        fContext.onMacro(name, params, content, inline);
     }
 
 
@@ -201,7 +207,7 @@ PARSER_END(XWikiScanner)
 
 TOKEN_MGR_DECLS: {
 
-    public static final Pattern MACRO_NAME_PATTERN = Pattern.compile("^\\{\\{[/]?[\u0000-\u0020]*(.*?)[\u0000-\u0020\\}/]");
+    public static final RegExp MACRO_NAME_PATTERN = RegExp.compile("^\\{\\{[/]?[\u0000-\u0020]*(.*?)[\u0000-\u0020\\}/]");
 
     int verbatimBlockDepth = 0;
     int tableDepth = 0; 
@@ -212,13 +218,14 @@ TOKEN_MGR_DECLS: {
         macroDepth = 1;
     }
     String getMacroName(CharSequence buf) {
-        Matcher matcher = MACRO_NAME_PATTERN.matcher(buf);
-        if (!matcher.find()) {
+        MatchResult matcher = MACRO_NAME_PATTERN.exec(buf.toString());
+        if (matcher.getGroupCount()==1) {
             // This must not be reachable.  I.e., make sure MACRO_NAME_PATTERN matches <MACRO_START> and <MACRO_END>.
-            throw new RuntimeException(String.format("Didn't match macro name pattern: [%s].", buf.toString()));
+            throw new RuntimeException("Didn't match macro name pattern: [%s]." + buf.toString());
         }
-        return matcher.group(1); 
+        return matcher.getGroup(1); 
     }
+
 
     /*
      * The lexical scanner operates in four different categories of

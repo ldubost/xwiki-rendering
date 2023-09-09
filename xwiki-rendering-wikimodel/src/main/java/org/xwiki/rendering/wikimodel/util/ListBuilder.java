@@ -22,7 +22,7 @@ package org.xwiki.rendering.wikimodel.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+// import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * This is an internal utility class used as a context to keep in memory the
@@ -64,10 +64,14 @@ public class ListBuilder
         @Override 
         public int hashCode()
         {
+            // TODO JSWEET TEMPORARY CODE REMOVAL
+            /*
             return new HashCodeBuilder()
                 .append(fTreeChar)
                 .append(fPos)
                 .toHashCode();
+            */
+            return ("" + fTreeChar + "-" + fPos + "-" + fRowChar).hashCode();
         }
         
 
@@ -132,7 +136,8 @@ public class ListBuilder
             if (ch == '\r' || ch == '\n') {
                 continue;
             }
-            if (!Character.isSpaceChar(ch)) {
+            // if (!Character.isSpaceChar(ch)) {
+            if (ch!=' ') {
                 char treeChar = getTreeType(ch);
                 list.add(new CharPos(treeChar, ch, pos));
             }

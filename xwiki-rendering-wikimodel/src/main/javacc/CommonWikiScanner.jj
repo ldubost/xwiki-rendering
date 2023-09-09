@@ -21,6 +21,7 @@ options
 {
     STATIC = false;
     UNICODE_INPUT = true;
+    JAVA_TEMPLATE_TYPE = "modern";  
 }
 
 PARSER_BEGIN(CommonWikiScanner)
