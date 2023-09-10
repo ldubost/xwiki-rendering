@@ -4,11 +4,11 @@
 
   import org.xwiki.rendering.wikimodel.IWikiPrinter;
 
-  public class TestPrinter implements IWikiPrinter {
+public class ParsePrinter implements IWikiPrinter {
         
      private StringBuffer buf;
 
-            public TestPrinter(StringBuffer buf) {
+            public ParsePrinter(StringBuffer buf) {
                 this.buf = buf;
             }
             public void print(String str)
